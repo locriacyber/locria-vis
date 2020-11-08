@@ -1,9 +1,11 @@
 <script>
-import { tick } from "svelte";
+import Game from './Game.svelte'
 
-const retention = 3000; // how long ticks are preserved
+const retention = 5000; // how long ticks are preserved
 const width = 500; // svg size
 const height = 200;
+
+let game;
 
 let ticks = new Set();
 function addOne() {
@@ -14,6 +16,9 @@ function addOne() {
 		ticks.delete(now);
 		ticks = ticks;
 	}, retention+100);
+
+	const angle = now % 20 / 20 * Math.PI * 2;
+	game.push(Math.cos(angle), Math.sin(angle));
 }
 let ticksNormalized = [];
 function update() {
@@ -30,10 +35,10 @@ requestAnimationFrame(update);
 
 <header>
 <h1>Spiking non-neural non-network!</h1>
-<button on:click={addOne}>Add One</button>
+<button tabindex=0 on:click={addOne}>Add One</button>
 </header>
 
-<main>
+<main class="grid">
 <div class="column">
 	<h2>Ticks, tabulated</h2>
 	<ol>
@@ -62,17 +67,23 @@ requestAnimationFrame(update);
 </div>
 </main>
 
-<footer>
-<h2>Ticks, together</h2>
-<svg width={40+100} height=400>
-	<line x1={20+80} y1=0 x2={20+80} y2=400 stroke="black" />
-	{#each ticksNormalized as tick}
-		<g transform="translate({20+80}, {tick.progress*400}) rotate({tick.rotation*20-10})">
-			<line y1=0 x1=-10 y2=0 x2=10 stroke="black"/>
-			<text x=30 text-anchor="end">{tick.raw}</text>
+<footer class="grid">
+<div class="column">
+	<h2>Bouncing ball</h2>
+	<Game bind:this={game}/>
+</div>
+<div class="column">
+	<h2>Ticks, together</h2>
+	<svg width={40+100} height=400>
+		<line x1={20+80} y1=0 x2={20+80} y2=400 stroke="black" />
+		{#each ticksNormalized as tick}
+		<g transform="translate({20+80}, {tick.progress*400}) rotate({(tick.rotation*2-1) * 10 * Math.max(1, game.speed())})">
+			<line x1=-80 y1=0 x2=0 y2=0 stroke="black"/>
+			<text x=30 y=0 text-anchor="end">{String(tick.raw).substr(-4)}</text>
 		</g>
-	{/each}
-</svg>
+		{/each}
+	</svg>
+</div>
 </footer>
 
 <style>
@@ -80,7 +91,7 @@ header button {
 	display: block;
 	width: 100vw;
 }
-main {
+.grid {
 	display: grid;
 	grid-auto-columns: auto;
 	grid-auto-flow: column;
@@ -96,7 +107,7 @@ main ol {
 .utd {
 	writing-mode: vertical-rl;
 }
-footer {
+.right {
 	text-align: right;
 }
 </style>
