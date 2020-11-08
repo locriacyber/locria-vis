@@ -53,4 +53,7 @@ export function speed() {
 svg {
     box-shadow: rgba(0,0,0, 0.3) 0 0 8px;
 }
+circle {
+    transition-property: cx, cy 0.14s linear;
+}
 </style>
