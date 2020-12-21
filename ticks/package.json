@@ -1,5 +1,5 @@
 {
-  "name": "svelte-app",
+  "name": "spiking-non-neural-non-network",
   "version": "1.0.0",
   "scripts": {
     "build": "rollup -c",
